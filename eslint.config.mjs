@@ -17,7 +17,7 @@ export default tseslint.config(
         ...globals.node,
         ...globals.jest,
       },
-      sourceType: 'commonjs',
+      sourceType: 'module', // можно оставить commonjs если нужно
       parserOptions: {
         projectService: true,
         tsconfigRootDir: import.meta.dirname,
@@ -26,9 +26,43 @@ export default tseslint.config(
   },
   {
     rules: {
+      // TypeScript правила
       '@typescript-eslint/no-explicit-any': 'off',
-      '@typescript-eslint/no-floating-promises': 'warn',
-      '@typescript-eslint/no-unsafe-argument': 'warn'
+      '@typescript-eslint/no-floating-promises':
+        'warn',
+      '@typescript-eslint/no-unsafe-argument':
+        'warn',
+
+      // Prettier правила
+      'prettier/prettier': [
+        'warn',
+        {
+          singleQuote: true,
+          semi: true,
+          tabWidth: 2,
+          useTabs: false,
+          trailingComma: 'es5',
+          bracketSpacing: true,
+          printWidth: 80,
+        },
+      ],
+
+      // Сортировка импортов
+      'import/order': [
+        'warn',
+        {
+          groups: [
+            ['builtin', 'external'],
+            'internal',
+            ['parent', 'sibling', 'index'],
+          ],
+          'newlines-between': 'always',
+          alphabetize: {
+            order: 'asc',
+            caseInsensitive: true,
+          },
+        },
+      ],
     },
-  },
+  }
 );
