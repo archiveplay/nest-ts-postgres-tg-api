@@ -1,12 +1,12 @@
-import { Test, TestingModule } from '@nestjs/testing';
-import { PrismaService } from './prisma.service';
+import { Test } from '@nestjs/testing';
 import { ConfigService } from '@nestjs/config';
+import { PrismaService } from './prisma.service';
 
 jest.mock('@prisma/client', () => {
-  const actual = jest.requireActual('@prisma/client');
   return {
-    ...actual,
-    PrismaClient: jest.fn().mockImplementation(() => ({})),
+    PrismaClient: jest.fn().mockImplementation((_args) => {
+      return { $connect: jest.fn(), $disconnect: jest.fn() };
+    }),
   };
 });
 
@@ -15,33 +15,34 @@ describe('PrismaService', () => {
   let configService: ConfigService;
 
   beforeEach(async () => {
-    const module: TestingModule = await Test.createTestingModule({
+    const module = await Test.createTestingModule({
       providers: [
         PrismaService,
         {
           provide: ConfigService,
-          useValue: {
-            get: jest.fn().mockReturnValue('postgresql://user:pass@localhost:5432/db'),
-          },
+          useValue: { get: jest.fn(() => 'postgresql://user:pass@localhost:5432/testdb') },
         },
       ],
     }).compile();
 
-    service = module.get<PrismaService>(PrismaService);
-    configService = module.get<ConfigService>(ConfigService);
+    service = module.get(PrismaService);
+    configService = module.get(ConfigService);
   });
 
   it('should be defined', () => {
     expect(service).toBeDefined();
   });
 
-  it('should extend PrismaClient', () => {
-    expect(Object.getPrototypeOf(PrismaService)).not.toBeNull();
-  });
-
-  it('should use DATABASE_URL from config service', () => {
+  it('should initialize PrismaClient with DATABASE_URL from config', () => {
     expect(configService.get).toHaveBeenCalledWith('DATABASE_URL');
+    const PrismaClientMock = require('@prisma/client').PrismaClient;
+    expect(PrismaClientMock).toHaveBeenCalledWith({
+      datasources: {
+        db: {
+          url: 'postgresql://user:pass@localhost:5432/testdb',
+        },
+      },
+    });
   });
 });
-
 
