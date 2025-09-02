@@ -1,18 +1,42 @@
-import { Injectable } from '@nestjs/common';
-import { ConfigService } from '@nestjs/config';
+import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { PassportStrategy } from '@nestjs/passport';
-import { Strategy } from 'passport-telegram-web-app';
+import { Strategy } from 'passport-custom';
+import { validate, isSignatureInvalidError } from '@telegram-apps/init-data-node';
+import { ConfigService } from '@nestjs/config';
 
 @Injectable()
 export class TelegramStrategy extends PassportStrategy(Strategy, 'telegram-web-app') {
-  constructor(config: ConfigService) {
-    const token = config.get('BOT_TOKEN');
-    if (!token) throw new Error('BOT_TOKEN is not set in env');
-    super({ token });
+  constructor(private readonly config: ConfigService) {
+    super();
   }
 
-  validate(payload: any) {
-    return payload;
+  async validate(req: any) {
+    const initData = req.body.initData as string;
+    if (!initData) {
+      throw new UnauthorizedException('initData missing');
+    }
+
+    const botToken = this.config.get<string>('BOT_TOKEN');
+    if (!botToken) throw new UnauthorizedException('BOT_TOKEN not set');
+
+    try {
+      validate(initData, botToken);
+    } catch (e) {
+      if (isSignatureInvalidError(e)) {
+        console.error('[TelegramStrategy] Signature invalid');
+        console.error(e);
+      }
+      throw new UnauthorizedException('Invalid initData');
+    }
+
+    const user = JSON.parse(
+      decodeURIComponent(
+        new URLSearchParams(initData)
+          .get('user')!
+      )
+    );
+
+    return user;
   }
 }
 

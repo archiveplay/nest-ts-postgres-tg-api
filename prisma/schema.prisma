@@ -14,11 +14,12 @@ datasource db {
 }
 
 model User {
-  id            Int       @id
-  first_name    String
-  last_name     String?
-  username      String?
-  photo_url     String?
-  language_code String?
-  last_login    DateTime?
+  id                 Int       @id
+  first_name         String
+  last_name          String?
+  username           String?
+  photo_url          String?
+  language_code      String?
+  last_login         DateTime?
+  allows_write_to_pm Boolean?
 }
