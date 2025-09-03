@@ -21,6 +21,7 @@ export class AuthService {
       create: {
         ...userDto,
         last_login: new Date(),
+        balance: 0
       },
     });
 

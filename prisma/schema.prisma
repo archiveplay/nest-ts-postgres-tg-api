@@ -14,6 +14,7 @@ datasource db {
 }
 
 model User {
+  // TG User data
   id                 Int       @id
   first_name         String
   last_name          String?
@@ -22,4 +23,7 @@ model User {
   language_code      String?
   last_login         DateTime?
   allows_write_to_pm Boolean?
+
+  // Custom data
+  balance Int
 }
