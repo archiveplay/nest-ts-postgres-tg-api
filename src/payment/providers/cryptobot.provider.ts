@@ -12,7 +12,7 @@ export class CryptoBotProvider extends PaymentProviderBase {
   async createInvoice(dto: CreateInvoiceDto, callback?: PaymentCallback) {
     callback && this.registerCallback(dto.payload, callback);
 
-    const token = this.config.get<string>('CRYPTO_BOT_TOKEN');
+    const token = this.config.get<string>('TG_CRYPTOBOT_PROVIDER_TOKEN');
 
     const response = await axios.post(
       'https://pay.crypt.bot/api/createInvoice',
