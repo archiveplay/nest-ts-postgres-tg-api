@@ -1,4 +1,4 @@
-import { PaymentProviderType } from "../providers/payment-provider.enum";
+import { PaymentProviderType } from '../providers/payment-provider.enum';
 
 export class CreateInvoiceDto {
   provider: PaymentProviderType;
@@ -7,5 +7,3 @@ export class CreateInvoiceDto {
   payload: string;
   amount: number;
 }
-
-

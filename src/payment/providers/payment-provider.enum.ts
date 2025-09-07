@@ -3,4 +3,3 @@ export enum PaymentProviderType {
   CryptoBot = 'cryptobot',
   YooKassa = 'yookassa',
 }
-

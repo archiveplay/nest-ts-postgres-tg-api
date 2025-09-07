@@ -1,4 +1,7 @@
-import { IsNumber, IsString } from 'class-validator';
+import {
+  IsNumber,
+  IsString,
+} from 'class-validator';
 
 export class JwtUserDto {
   @IsNumber()
@@ -7,5 +10,3 @@ export class JwtUserDto {
   @IsString()
   username: string;
 }
-
-

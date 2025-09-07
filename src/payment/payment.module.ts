@@ -1,4 +1,4 @@
-import { Module, Logger } from '@nestjs/common';
+import { Module } from '@nestjs/common';
 import { PaymentService } from './payment.service';
 import { StarsProvider } from './providers/stars.provider';
 import { CryptoBotProvider } from './providers/cryptobot.provider';
@@ -11,14 +11,8 @@ import { PaymentController } from './payment.controller';
     PaymentService,
     StarsProvider,
     CryptoBotProvider,
-    Logger,
   ],
   imports: [TelegramModule],
-  exports: [
-    PaymentService,
-    StarsProvider,
-    CryptoBotProvider,
-  ],
+  exports: [PaymentService],
 })
-export class PaymentModule { }
-
+export class PaymentModule {}

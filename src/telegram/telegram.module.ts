@@ -4,7 +4,7 @@ import { UserModule } from 'src/user/user.module';
 
 @Module({
   imports: [UserModule],
-  providers: [TelegramService, Logger],
+  providers: [TelegramService],
   exports: [TelegramService],
 })
-export class TelegramModule { }
+export class TelegramModule {}

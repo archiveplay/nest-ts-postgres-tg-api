@@ -1,7 +1,10 @@
 import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import axios from 'axios';
-import { PaymentProviderBase, PaymentCallback } from './payment-provider.base';
+import {
+  PaymentProviderBase,
+  PaymentCallback,
+} from './payment-provider.base';
 import { CreateInvoiceDto } from '../dto/create-invoice.dto';
 import { TelegramService } from 'src/telegram/telegram.service';
 import { PaymentStatus } from '../types/PaymentStatus';
@@ -11,13 +14,18 @@ export class StarsProvider extends PaymentProviderBase {
   constructor(
     private readonly config: ConfigService,
     private telegramService: TelegramService
-  ) { super() }
+  ) {
+    super();
+  }
 
-  async createInvoice(dto: CreateInvoiceDto, callback?: PaymentCallback) {
-    console.log('createInvoice registerCallback', callback?.toString())
+  async createInvoice(
+    dto: CreateInvoiceDto,
+    callback?: PaymentCallback
+  ) {
     this.registerCallback(dto.payload, callback);
 
-    const botToken = this.config.get<string>('BOT_TOKEN');
+    const botToken =
+      this.config.get<string>('BOT_TOKEN');
 
     const response = await axios.post(
       `https://api.telegram.org/bot${botToken}/createInvoiceLink`,
@@ -27,24 +35,31 @@ export class StarsProvider extends PaymentProviderBase {
         payload: dto.payload,
         provider_token: '',
         currency: 'XTR',
-        prices: [{ label: dto.title, amount: dto.amount }],
-      },
+        prices: [
+          {
+            label: dto.title,
+            amount: dto.amount,
+          },
+        ],
+      }
     );
 
-    return { url: response.data.result as string };
+    return {
+      url: response.data.result as string,
+    };
   }
 
   protected parseWebhook(update: any) {
-    console.log('stars parseWebhook', update)
-
     if (update.pre_checkout_query) {
-      this.telegramService.answerPreCheckoutQuery(update.pre_checkout_query.id);
+      this.telegramService.answerPreCheckoutQuery(
+        update.pre_checkout_query.id
+      );
       return null;
     }
 
     if (update.message?.successful_payment) {
-      const payment = update.message.successful_payment;
-      console.log('successful_payment', payment.invoice_payload);
+      const payment =
+        update.message.successful_payment;
       return {
         payload: payment.invoice_payload,
         status: 'paid' as PaymentStatus,
@@ -54,4 +69,3 @@ export class StarsProvider extends PaymentProviderBase {
     return null;
   }
 }
-

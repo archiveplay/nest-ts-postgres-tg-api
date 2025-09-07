@@ -4,9 +4,14 @@ import { PrismaService } from './prisma.service';
 
 jest.mock('@prisma/client', () => {
   return {
-    PrismaClient: jest.fn().mockImplementation((_args) => {
-      return { $connect: jest.fn(), $disconnect: jest.fn() };
-    }),
+    PrismaClient: jest
+      .fn()
+      .mockImplementation((_args) => {
+        return {
+          $connect: jest.fn(),
+          $disconnect: jest.fn(),
+        };
+      }),
   };
 });
 
@@ -15,15 +20,22 @@ describe('PrismaService', () => {
   let configService: ConfigService;
 
   beforeEach(async () => {
-    const module = await Test.createTestingModule({
-      providers: [
-        PrismaService,
-        {
-          provide: ConfigService,
-          useValue: { get: jest.fn(() => 'postgresql://user:pass@localhost:5432/testdb') },
-        },
-      ],
-    }).compile();
+    const module = await Test.createTestingModule(
+      {
+        providers: [
+          PrismaService,
+          {
+            provide: ConfigService,
+            useValue: {
+              get: jest.fn(
+                () =>
+                  'postgresql://user:pass@localhost:5432/testdb'
+              ),
+            },
+          },
+        ],
+      }
+    ).compile();
 
     service = module.get(PrismaService);
     configService = module.get(ConfigService);
@@ -34,15 +46,19 @@ describe('PrismaService', () => {
   });
 
   it('should initialize PrismaClient with DATABASE_URL from config', () => {
-    expect(configService.get).toHaveBeenCalledWith('DATABASE_URL');
-    const PrismaClientMock = require('@prisma/client').PrismaClient;
-    expect(PrismaClientMock).toHaveBeenCalledWith({
-      datasources: {
-        db: {
-          url: 'postgresql://user:pass@localhost:5432/testdb',
+    expect(
+      configService.get
+    ).toHaveBeenCalledWith('DATABASE_URL');
+    const PrismaClientMock =
+      require('@prisma/client').PrismaClient;
+    expect(PrismaClientMock).toHaveBeenCalledWith(
+      {
+        datasources: {
+          db: {
+            url: 'postgresql://user:pass@localhost:5432/testdb',
+          },
         },
-      },
-    });
+      }
+    );
   });
 });
-

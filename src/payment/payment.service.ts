@@ -9,28 +9,44 @@ import { PaymentCallback } from './providers/payment-provider.base';
 export class PaymentService {
   constructor(
     private starsProvider: StarsProvider,
-    private cryptoProvider: CryptoBotProvider,
-  ) { }
+    private cryptoProvider: CryptoBotProvider
+  ) {}
 
-  async createInvoice(dto: CreateInvoiceDto, callback?: PaymentCallback) {
+  async createInvoice(
+    dto: CreateInvoiceDto,
+    callback?: PaymentCallback
+  ) {
     switch (dto.provider) {
       case PaymentProviderType.Stars:
-        return this.starsProvider.createInvoice(dto, callback);
+        return this.starsProvider.createInvoice(
+          dto,
+          callback
+        );
       case PaymentProviderType.CryptoBot:
-        return this.cryptoProvider.createInvoice(dto, callback);
+        return this.cryptoProvider.createInvoice(
+          dto,
+          callback
+        );
       default:
-        throw new Error(`Unknown provider: ${dto.provider}`);
+        throw new Error(
+          `Unknown provider: ${dto.provider}`
+        );
     }
   }
 
-  async handleWebhook(provider: PaymentProviderType, rawBody) {
+  async handleWebhook(
+    provider: PaymentProviderType,
+    rawBody
+  ) {
     switch (provider) {
       case PaymentProviderType.Stars:
-        return this.starsProvider.handleWebhook(rawBody);
+        return this.starsProvider.handleWebhook(
+          rawBody
+        );
       case PaymentProviderType.CryptoBot:
-        return this.cryptoProvider.handleWebhook(rawBody);
+        return this.cryptoProvider.handleWebhook(
+          rawBody
+        );
     }
   }
 }
-
-

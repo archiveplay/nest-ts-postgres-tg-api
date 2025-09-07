@@ -1,6 +1,5 @@
 #!/bin/bash
 
-# Загружаем .env из корня проекта, игнорируя пустые строки и комментарии
 export $(grep -v -E '^#|^$' .env | xargs)
 
 if [ -z "$BOT_TOKEN" ]; then

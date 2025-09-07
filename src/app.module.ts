@@ -18,4 +18,4 @@ import { UserPaymentModule } from './user-payment/user-payment.module';
     UserPaymentModule,
   ],
 })
-export class AppModule { }
+export class AppModule {}
