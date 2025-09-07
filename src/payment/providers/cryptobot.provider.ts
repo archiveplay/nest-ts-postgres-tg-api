@@ -3,14 +3,15 @@ import { ConfigService } from '@nestjs/config';
 import axios from 'axios';
 import { PaymentProviderBase, PaymentCallback } from './payment-provider.base';
 import { CreateInvoiceDto } from '../dto/create-invoice.dto';
+import { PaymentStatus } from '../types/PaymentStatus';
 
 @Injectable()
 export class CryptoBotProvider extends PaymentProviderBase {
 
-  constructor(private config: ConfigService) { super() }
+  constructor(private readonly config: ConfigService) { super() }
 
   async createInvoice(dto: CreateInvoiceDto, callback?: PaymentCallback) {
-    callback && this.registerCallback(dto.payload, callback);
+    this.registerCallback(dto.payload, callback);
 
     const token = this.config.get<string>('TG_CRYPTOBOT_PROVIDER_TOKEN');
 
@@ -26,7 +27,13 @@ export class CryptoBotProvider extends PaymentProviderBase {
       },
     );
 
-    return { url: response.data.result.pay_url };
+    return { url: response.data.result.pay_url as string };
   }
+
+  protected parseWebhook(rawBody: any) {
+    //TODO: parse для cryptobot
+    return { status: 'paid' as PaymentStatus, payload: 'epta' }
+  }
+
 }
 

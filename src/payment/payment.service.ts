@@ -3,6 +3,7 @@ import { StarsProvider } from './providers/stars.provider';
 import { CryptoBotProvider } from './providers/cryptobot.provider';
 import { PaymentProviderType } from './providers/payment-provider.enum';
 import { CreateInvoiceDto } from './dto/create-invoice.dto';
+import { PaymentCallback } from './providers/payment-provider.base';
 
 @Injectable()
 export class PaymentService {
@@ -11,7 +12,7 @@ export class PaymentService {
     private cryptoProvider: CryptoBotProvider,
   ) { }
 
-  async createInvoice(dto: CreateInvoiceDto, callback?: any) {
+  async createInvoice(dto: CreateInvoiceDto, callback?: PaymentCallback) {
     switch (dto.provider) {
       case PaymentProviderType.Stars:
         return this.starsProvider.createInvoice(dto, callback);
@@ -22,12 +23,12 @@ export class PaymentService {
     }
   }
 
-  async handleWebhook(provider: PaymentProviderType, payload: string, status: 'paid' | 'cancelled' | 'failed') {
+  async handleWebhook(provider: PaymentProviderType, rawBody) {
     switch (provider) {
       case PaymentProviderType.Stars:
-        return this.starsProvider.handlePayment(payload, status);
+        return this.starsProvider.handleWebhook(rawBody);
       case PaymentProviderType.CryptoBot:
-        return this.cryptoProvider.handlePayment(payload, status);
+        return this.cryptoProvider.handleWebhook(rawBody);
     }
   }
 }

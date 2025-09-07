@@ -1,10 +1,13 @@
-import { Body, Controller, Post } from '@nestjs/common';
-import { PaymentService } from './payment.service';
-import { CreateInvoiceDto } from './dto/create-invoice.dto';
+import { Controller, Post, Body, Param, Logger } from '@nestjs/common';
+import { PaymentService } from '../payment/payment.service';
 import { PaymentProviderType } from './providers/payment-provider.enum';
+import { CreateInvoiceDto } from './dto/create-invoice.dto';
+
 
 @Controller('payment')
 export class PaymentController {
+  private readonly logger = new Logger(PaymentController.name);
+
   constructor(private readonly paymentService: PaymentService) { }
 
   @Post('create-link')
@@ -14,11 +17,11 @@ export class PaymentController {
 
   @Post('webhook/:provider')
   async webhook(
-    @Body('payload') payload: string,
-    @Body('status') status: 'paid' | 'cancelled' | 'failed',
-    @Body('provider') provider: PaymentProviderType,
+    @Param('provider') provider: PaymentProviderType,
+    @Body() rawBody: any,
   ) {
-    return this.paymentService.handleWebhook(provider, payload, status);
+    this.logger.log(`Webhook received for provider=${provider}`);
+    return this.paymentService.handleWebhook(provider, rawBody);
   }
 }
 

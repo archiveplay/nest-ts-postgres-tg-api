@@ -3,13 +3,19 @@ import { ConfigService } from '@nestjs/config';
 import axios from 'axios';
 import { PaymentProviderBase, PaymentCallback } from './payment-provider.base';
 import { CreateInvoiceDto } from '../dto/create-invoice.dto';
+import { TelegramService } from 'src/telegram/telegram.service';
+import { PaymentStatus } from '../types/PaymentStatus';
 
 @Injectable()
 export class StarsProvider extends PaymentProviderBase {
-  constructor(private config: ConfigService) { super(); }
+  constructor(
+    private readonly config: ConfigService,
+    private telegramService: TelegramService
+  ) { super() }
 
   async createInvoice(dto: CreateInvoiceDto, callback?: PaymentCallback) {
-    callback && this.registerCallback(dto.payload, callback);
+    console.log('createInvoice registerCallback', callback?.toString())
+    this.registerCallback(dto.payload, callback);
 
     const botToken = this.config.get<string>('BOT_TOKEN');
 
@@ -25,7 +31,27 @@ export class StarsProvider extends PaymentProviderBase {
       },
     );
 
-    return { url: response.data.result };
+    return { url: response.data.result as string };
+  }
+
+  protected parseWebhook(update: any) {
+    console.log('stars parseWebhook', update)
+
+    if (update.pre_checkout_query) {
+      this.telegramService.answerPreCheckoutQuery(update.pre_checkout_query.id);
+      return null;
+    }
+
+    if (update.message?.successful_payment) {
+      const payment = update.message.successful_payment;
+      console.log('successful_payment', payment.invoice_payload);
+      return {
+        payload: payment.invoice_payload,
+        status: 'paid' as PaymentStatus,
+      };
+    }
+
+    return null;
   }
 }
 

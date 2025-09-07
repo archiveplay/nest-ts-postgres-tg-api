@@ -26,4 +26,32 @@ model User {
 
   // Custom data
   balance Int
+
+  payments UserPayment[]
+}
+
+model UserPayment {
+  id        Int                 @id @default(autoincrement())
+  user      User                @relation(fields: [userId], references: [id])
+  userId    Int
+  payload   String              @unique
+  provider  PaymentProviderType
+  amount    Int
+  status    PaymentStatus       @default(pending)
+  createdAt DateTime            @default(now())
+  updatedAt DateTime            @updatedAt
+
+  @@index([userId])
+}
+
+enum PaymentStatus {
+  pending
+  paid
+  cancelled
+  failed
+}
+
+enum PaymentProviderType {
+  stars
+  cryptobot
 }

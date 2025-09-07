@@ -1,40 +1,47 @@
-import { Injectable } from '@nestjs/common';
-import { PaymentService } from '../payment/payment.service';
-import { PaymentProviderType } from '../payment/providers/payment-provider.enum';
-import { PrismaClient } from '@prisma/client';
-import { PaymentCallback } from '../payment/providers/payment-provider.base';
+import { Injectable, Logger } from "@nestjs/common";
+import { PaymentProviderType } from "@prisma/client";
+import { PaymentStatus } from "src/payment/types/PaymentStatus";
+import { PrismaService } from "src/prisma/prisma.service";
+import { UserService } from "src/user/user.service";
 
 @Injectable()
 export class UserPaymentService {
-  private prisma = new PrismaClient();
+  private readonly logger = new Logger(UserPaymentService.name);
+  constructor(
+    private readonly prisma: PrismaService,
+    private readonly userService: UserService,
+  ) { }
 
-  constructor(private paymentService: PaymentService) { }
-
-  async topUpBalance(userId: number, amount: number, provider: PaymentProviderType) {
-    const payload = `topup_${userId}_${Date.now()}`;
-
-    const callback: PaymentCallback = async (status, payload) => {
-      if (status === 'paid') {
-        await this.prisma.user.update({
-          where: { id: userId },
-          data: { balance: { increment: amount } },
-        });
-        console.log(`User balance ${userId} increased by ${amount}`);
-      } else {
-        console.log(`Payment ${payload} do not success: ${status}`);
-      }
-    };
-
-    return this.paymentService.createInvoice(
-      {
+  async createUserPayment(
+    userId: number,
+    provider: PaymentProviderType,
+    amount: number,
+    payload: string,
+  ) {
+    await this.prisma.userPayment.create({
+      data: {
+        userId,
         provider,
-        title: 'Topup balance',
-        description: `Topup by ${amount}`,
-        payload,
         amount,
+        payload,
+        status: 'pending',
       },
-      callback
-    );
+    });
+    this.logger.log(`UserPayment created user=${userId} payload=${payload}`);
+  }
+
+  async handleTopUpCallback(status: PaymentStatus, payload: string, userId: number, amount: number) {
+    this.logger.log(`TopUp callback triggered for payload=${payload}, status=${status}`);
+
+    const payment = await this.prisma.userPayment.update({
+      where: { payload },
+      data: { status },
+    });
+
+    if (status === 'paid') {
+      await this.userService.incrementBalance(payment.userId, payment.amount);
+      this.logger.log(`User ${userId} balance incremented by ${amount}`);
+    }
   }
 }
 
