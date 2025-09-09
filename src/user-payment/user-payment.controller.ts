@@ -27,7 +27,7 @@ export class UserPaymentController {
     @Body() dto: CreateInvoiceDto,
     @User() user: JwtUserDto
   ) {
-    const invoicePayload = `[user-payment/top-up]: ${dto.title} ${user.userId} ${new Date().toDateString()}`;
+    const invoicePayload = `[user-payment/top-up]: ${dto.title} ${user.userId} ${new Date()}`;
 
     await this.userPaymentService.createUserPayment(
       user.userId,

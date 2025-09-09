@@ -7,6 +7,8 @@ import { Strategy } from 'passport-custom';
 import {
   validate,
   isSignatureInvalidError,
+  SignatureInvalidError,
+  parse,
 } from '@telegram-apps/init-data-node';
 import { ConfigService } from '@nestjs/config';
 
@@ -40,21 +42,14 @@ export class TelegramStrategy extends PassportStrategy(
       validate(initData, botToken);
     } catch (e) {
       if (isSignatureInvalidError(e)) {
-        console.error(
-          '[TelegramStrategy] Signature invalid'
-        );
-        console.error(e);
+        throw new SignatureInvalidError();
       }
       throw new UnauthorizedException(
         'Invalid initData'
       );
     }
 
-    const user = JSON.parse(
-      decodeURIComponent(
-        new URLSearchParams(initData).get('user')!
-      )
-    );
+    const { user } = parse(initData);
 
     return user;
   }
