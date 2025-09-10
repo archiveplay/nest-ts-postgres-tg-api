@@ -11,6 +11,7 @@ import { CreateInvoiceDto } from 'src/payment/dto/create-invoice.dto';
 import { JwtAuthGuard } from 'src/auth/guard/jwt.guard';
 import { JwtUserDto } from 'src/auth/dto/jwt-user.dto';
 import { User } from 'src/common/decorators/user.decorator';
+import { CurrencyType } from 'src/common/types/currency.enum';
 
 @Controller('user-payment')
 export class UserPaymentController {
@@ -27,12 +28,13 @@ export class UserPaymentController {
     @Body() dto: CreateInvoiceDto,
     @User() user: JwtUserDto
   ) {
-    const invoicePayload = `[user-payment/top-up]: ${dto.title} ${user.userId} ${new Date()}`;
+    const invoicePayload = `[user-payment/top-up]: ${user.userId} ${new Date()}`;
 
     await this.userPaymentService.createUserPayment(
       user.userId,
       PaymentProviderType.Stars,
       dto.amount,
+      dto.currency || CurrencyType.USDT,
       invoicePayload
     );
 
@@ -44,7 +46,7 @@ export class UserPaymentController {
       );
 
     this.logger.log(
-      `Invoice ${invoice.url} successfully created for user ${user.userId}`
+      `Invoice ${dto.title} successfully created for user ${user.userId}`
     );
     return invoice;
   }

@@ -1,6 +1,9 @@
-import { Injectable } from '@nestjs/common';
+import {
+  Injectable,
+  Logger,
+} from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import axios from 'axios';
+import axios, { AxiosInstance } from 'axios';
 import {
   PaymentProviderBase,
   PaymentCallback,
@@ -8,49 +11,79 @@ import {
 import { CreateInvoiceDto } from '../dto/create-invoice.dto';
 import { PaymentStatus } from '../types/PaymentStatus';
 
+const CRYPTOBOT_API = {
+  test: 'https://testnet-pay.crypt.bot/',
+  main: 'https://pay.crypt.bot/',
+};
+
 @Injectable()
 export class CryptoBotProvider extends PaymentProviderBase {
+  private readonly axios: AxiosInstance;
+  private logger = new Logger(
+    CryptoBotProvider.name
+  );
+
   constructor(
     private readonly config: ConfigService
   ) {
     super();
+
+    const mode =
+      this.config.get<string>('MODE') || 'main';
+    const apiUrl = CRYPTOBOT_API[mode];
+
+    const token = this.config.get<string>(
+      `TG_CRYPTOBOT_PROVIDER_TOKEN${mode === 'test' ? '_TEST' : ''}`
+    );
+
+    this.logger.log(
+      `Cryptobot provider working in ${mode}net and requesting ${apiUrl}`
+    );
+
+    this.axios = axios.create({
+      baseURL: apiUrl,
+      timeout: 5000,
+      headers: {
+        'Crypto-Pay-API-Token': token,
+        'Content-Type': 'application/json',
+      },
+    });
   }
 
   async createInvoice(
     dto: CreateInvoiceDto,
     callback?: PaymentCallback
   ) {
-    this.registerCallback(dto.payload, callback);
-
-    const token = this.config.get<string>(
-      'TG_CRYPTOBOT_PROVIDER_TOKEN'
+    this.registerCallback(
+      PaymentStatus.PAID,
+      callback
     );
 
-    const response = await axios.post(
-      'https://pay.crypt.bot/api/createInvoice',
+    // TODO: type here
+    const {
+      data: { ok, result },
+    } = await this.axios.post(
+      'api/createInvoice',
       {
-        asset: 'TON',
+        asset: dto.currency,
         amount: dto.amount,
         description: dto.description,
-      },
-      {
-        headers: {
-          'Crypto-Pay-API-Token': token,
-          'Content-Type': 'application/json',
-        },
       }
     );
 
-    return {
-      url: response.data.result.pay_url as string,
-    };
+    console.log('response', ok, result);
+    if (!ok)
+      throw new Error('Create invoice error');
+
+    return result;
   }
 
   protected parseWebhook(rawBody: any) {
-    //TODO: parse для cryptobot
+    console.log('parseWebhook', rawBody);
     return {
-      status: 'paid' as PaymentStatus,
-      payload: 'epta',
+      status: rawBody.payload
+        .status as PaymentStatus,
+      payload: rawBody.payload,
     };
   }
 }

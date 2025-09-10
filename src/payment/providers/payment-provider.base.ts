@@ -2,8 +2,7 @@ import { CreateInvoiceDto } from '../dto/create-invoice.dto';
 import { PaymentStatus } from '../types/PaymentStatus';
 
 export type PaymentCallback = (
-  status: PaymentStatus,
-  payload: string
+  status: PaymentStatus
 ) => Promise<void>;
 
 export abstract class PaymentProviderBase {
@@ -15,9 +14,7 @@ export abstract class PaymentProviderBase {
   /**
    * handleWebhook return payload/status
    */
-  protected abstract parseWebhook(
-    rawBody: any
-  ): {
+  protected abstract parseWebhook(rawBody: any): {
     payload: string;
     status: PaymentStatus;
   } | null;
@@ -28,29 +25,29 @@ export abstract class PaymentProviderBase {
   ): Promise<{ url: string }>;
 
   protected registerCallback(
-    payload: string,
+    status: PaymentStatus,
     callback?: PaymentCallback
   ) {
     if (callback)
-      this.callbacks.set(payload, callback);
+      this.callbacks.set(status, callback);
   }
 
   private async callCallback(
-    payload: string,
     status: PaymentStatus
   ) {
-    const callback = this.callbacks.get(payload);
+    const callback = this.callbacks.get(status);
     if (callback) {
-      await callback(status, payload);
-      this.callbacks.delete(payload);
+      await callback(status);
+      this.callbacks.delete(status);
     }
   }
 
   async handleWebhook(rawBody: any) {
     const result = this.parseWebhook(rawBody);
+    console.log('parseWebhook result', result);
     if (result) {
-      const { payload, status } = result;
-      await this.callCallback(payload, status);
+      const { status } = result;
+      await this.callCallback(status);
     }
   }
 }

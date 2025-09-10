@@ -4,6 +4,7 @@ import {
   Body,
   Param,
   Logger,
+  HttpCode,
 } from '@nestjs/common';
 import { PaymentService } from '../payment/payment.service';
 import { PaymentProviderType } from './providers/payment-provider.enum';
@@ -27,6 +28,7 @@ export class PaymentController {
   }
 
   @Post('webhook/:provider')
+  @HttpCode(200)
   async webhook(
     @Param('provider')
     provider: PaymentProviderType,
@@ -35,9 +37,12 @@ export class PaymentController {
     this.logger.log(
       `Webhook received for provider=${provider}`
     );
-    return this.paymentService.handleWebhook(
+
+    await this.paymentService.handleWebhook(
       provider,
       rawBody
     );
+
+    return { ok: true };
   }
 }

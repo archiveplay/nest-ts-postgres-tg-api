@@ -22,7 +22,10 @@ export class StarsProvider extends PaymentProviderBase {
     dto: CreateInvoiceDto,
     callback?: PaymentCallback
   ) {
-    this.registerCallback(dto.payload, callback);
+    this.registerCallback(
+      PaymentStatus.PAID,
+      callback
+    );
 
     const botToken =
       this.config.get<string>('BOT_TOKEN');
@@ -61,7 +64,7 @@ export class StarsProvider extends PaymentProviderBase {
       const payment =
         update.message.successful_payment;
       return {
-        payload: payment.invoice_payload,
+        payload: payment,
         status: 'paid' as PaymentStatus,
       };
     }

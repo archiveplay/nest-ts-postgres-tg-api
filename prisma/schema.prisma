@@ -30,6 +30,7 @@ model UserPayment {
   userId    Int
   payload   String              @unique
   provider  PaymentProviderType
+  currency  String              @default("USDT")
   amount    Int
   status    PaymentStatus       @default(pending)
   createdAt DateTime            @default(now())

@@ -30,21 +30,20 @@ export class UserPaymentService {
     const invoice =
       await this.paymentService.createInvoice(
         {
-          provider: PaymentProviderType.stars,
+          provider: dto.provider,
           payload: invoicePayload,
           title: dto.title || 'Top up balance',
           description:
             dto.description ||
             `Top up balance by ${dto.amount}`,
           amount: dto.amount,
-          currency: 'XTR' as CurrencyType,
+          currency: dto.currency,
         },
-        async (status, payload) => {
+        async (status) => {
           await this.handleTopUpCallback(
+            invoicePayload,
             status,
-            payload,
-            user.userId,
-            dto.amount
+            user.userId
           );
         }
       );
@@ -56,6 +55,7 @@ export class UserPaymentService {
     userId: number,
     provider: PaymentProviderType,
     amount: number,
+    currency: CurrencyType,
     payload: string
   ) {
     await this.prisma.userPayment.create({
@@ -63,6 +63,7 @@ export class UserPaymentService {
         userId,
         provider,
         amount,
+        currency,
         payload,
         status: 'pending',
       },
@@ -73,15 +74,11 @@ export class UserPaymentService {
   }
 
   async handleTopUpCallback(
-    status: PaymentStatus,
     payload: string,
-    userId: number,
-    amount: number
+    status: PaymentStatus,
+    userId: number
   ) {
-    this.logger.log(
-      `TopUp callback triggered for payload=${payload}, status=${status}`
-    );
-
+    //TODO: calc amount
     const payment =
       await this.prisma.userPayment.update({
         where: { payload },
@@ -94,7 +91,7 @@ export class UserPaymentService {
         payment.amount
       );
       this.logger.log(
-        `User ${userId} balance incremented by ${amount}`
+        `User ${userId} balance incremented by`
       );
     }
   }
