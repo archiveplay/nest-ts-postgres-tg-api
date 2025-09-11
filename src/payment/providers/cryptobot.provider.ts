@@ -59,7 +59,6 @@ export class CryptoBotProvider extends PaymentProviderBase {
       callback
     );
 
-    // TODO: type here
     const {
       data: { ok, result },
     } = await this.axios.post(
@@ -71,7 +70,6 @@ export class CryptoBotProvider extends PaymentProviderBase {
       }
     );
 
-    console.log('response', ok, result);
     if (!ok)
       throw new Error('Create invoice error');
 
@@ -79,11 +77,13 @@ export class CryptoBotProvider extends PaymentProviderBase {
   }
 
   protected parseWebhook(rawBody: any) {
-    console.log('parseWebhook', rawBody);
+    const payload = rawBody.payload;
     return {
-      status: rawBody.payload
-        .status as PaymentStatus,
-      payload: rawBody.payload,
+      status: payload.status as PaymentStatus,
+      payload: {
+        currency: payload.asset,
+        amount: payload.amount,
+      },
     };
   }
 }

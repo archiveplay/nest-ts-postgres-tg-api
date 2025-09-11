@@ -64,7 +64,10 @@ export class StarsProvider extends PaymentProviderBase {
       const payment =
         update.message.successful_payment;
       return {
-        payload: payment,
+        payload: {
+          currency: payment.currency,
+          amount: payment.total_amount,
+        },
         status: 'paid' as PaymentStatus,
       };
     }

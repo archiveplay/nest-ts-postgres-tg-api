@@ -5,6 +5,11 @@ export type PaymentCallback = (
   status: PaymentStatus
 ) => Promise<void>;
 
+export interface ParsedPaymentPayload {
+  currency: string;
+  amount: number;
+}
+
 export abstract class PaymentProviderBase {
   private callbacks = new Map<
     string,
@@ -15,7 +20,7 @@ export abstract class PaymentProviderBase {
    * handleWebhook return payload/status
    */
   protected abstract parseWebhook(rawBody: any): {
-    payload: string;
+    payload: ParsedPaymentPayload;
     status: PaymentStatus;
   } | null;
 
