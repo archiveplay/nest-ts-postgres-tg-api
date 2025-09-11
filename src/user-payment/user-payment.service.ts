@@ -60,19 +60,21 @@ export class UserPaymentService {
     currency: CurrencyType,
     payload: string
   ) {
-    await this.prisma.userPayment.create({
-      data: {
-        userId,
-        provider,
-        amount,
-        currency,
-        payload,
-        status: 'pending',
-      },
-    });
+    const { id } =
+      await this.prisma.userPayment.create({
+        data: {
+          userId,
+          provider,
+          amount,
+          currency,
+          payload,
+          status: 'pending',
+        },
+      });
     this.logger.log(
-      `UserPayment created user=${userId} payload=${payload}`
+      `UserPayment ${id} created user=${userId} payload=${payload}`
     );
+    return id;
   }
 
   async handleTopUpCallback(

@@ -30,13 +30,14 @@ export class UserPaymentController {
   ) {
     const invoicePayload = `[user-payment/top-up]: ${user.userId} ${new Date()}`;
 
-    await this.userPaymentService.createUserPayment(
-      user.userId,
-      PaymentProviderType.Stars,
-      dto.amount,
-      dto.currency || CurrencyType.USDT,
-      invoicePayload
-    );
+    const id =
+      await this.userPaymentService.createUserPayment(
+        user.userId,
+        dto.provider,
+        dto.amount,
+        dto.currency || CurrencyType.USDT,
+        invoicePayload
+      );
 
     const invoice =
       await this.userPaymentService.createInvoice(
@@ -45,8 +46,10 @@ export class UserPaymentController {
         dto
       );
 
+    invoice.id = id;
+
     this.logger.log(
-      `Invoice ${dto.title} successfully created for user ${user.userId}`
+      `Invoice [${id}] ${dto.title} successfully created for user ${user.userId}`
     );
     return invoice;
   }
