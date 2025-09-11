@@ -1,12 +1,14 @@
 import {
   Body,
   Controller,
+  Get,
   Logger,
+  NotFoundException,
+  Param,
   Post,
   UseGuards,
 } from '@nestjs/common';
 import { UserPaymentService } from './user-payment.service';
-import { PaymentProviderType } from 'src/payment/providers/payment-provider.enum';
 import { CreateInvoiceDto } from 'src/payment/dto/create-invoice.dto';
 import { JwtAuthGuard } from 'src/auth/guard/jwt.guard';
 import { JwtUserDto } from 'src/auth/dto/jwt-user.dto';
@@ -52,5 +54,30 @@ export class UserPaymentController {
       `Invoice [${id}] ${dto.title} successfully created for user ${user.userId}`
     );
     return invoice;
+  }
+
+  @Get(':id/status')
+  async getPaymentStatus(
+    @Param('id') id: string
+  ) {
+    const payment =
+      await this.userPaymentService.getPaymentById(
+        Number(id)
+      );
+
+    if (!payment) {
+      throw new NotFoundException(
+        `Payment with id=${id} not found`
+      );
+    }
+
+    this.logger.log(
+      `Payment ${id} status checked: ${payment.status}`
+    );
+
+    return {
+      id: payment.id,
+      status: payment.status,
+    };
   }
 }

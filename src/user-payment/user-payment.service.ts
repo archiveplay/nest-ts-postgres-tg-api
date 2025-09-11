@@ -108,4 +108,10 @@ export class UserPaymentService {
       );
     }
   }
+
+  async getPaymentById(id: number) {
+    return this.prisma.userPayment.findUnique({
+      where: { id },
+    });
+  }
 }
