@@ -6,6 +6,7 @@ import { UserModule } from './user/user.module';
 import { PaymentModule } from './payment/payment.module';
 import { TelegramModule } from './telegram/telegram.module';
 import { UserPaymentModule } from './user-payment/user-payment.module';
+import { CurrencyRatesModule } from './currency-rates/currency-rates.module';
 
 @Module({
   imports: [
@@ -16,6 +17,7 @@ import { UserPaymentModule } from './user-payment/user-payment.module';
     PaymentModule,
     TelegramModule,
     UserPaymentModule,
+    CurrencyRatesModule,
   ],
 })
 export class AppModule {}

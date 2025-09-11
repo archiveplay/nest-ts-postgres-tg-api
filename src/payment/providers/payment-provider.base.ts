@@ -2,7 +2,8 @@ import { CreateInvoiceDto } from '../dto/create-invoice.dto';
 import { PaymentStatus } from '../types/PaymentStatus';
 
 export type PaymentCallback = (
-  status: PaymentStatus
+  status: PaymentStatus,
+  payload: ParsedPaymentPayload
 ) => Promise<void>;
 
 export interface ParsedPaymentPayload {
@@ -38,11 +39,12 @@ export abstract class PaymentProviderBase {
   }
 
   private async callCallback(
-    status: PaymentStatus
+    status: PaymentStatus,
+    payload: ParsedPaymentPayload
   ) {
     const callback = this.callbacks.get(status);
     if (callback) {
-      await callback(status);
+      await callback(status, payload);
       this.callbacks.delete(status);
     }
   }
@@ -51,8 +53,8 @@ export abstract class PaymentProviderBase {
     const result = this.parseWebhook(rawBody);
     console.log('parseWebhook result', result);
     if (result) {
-      const { status } = result;
-      await this.callCallback(status);
+      const { status, payload } = result;
+      await this.callCallback(status, payload);
     }
   }
 }

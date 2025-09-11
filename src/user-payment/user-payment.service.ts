@@ -7,6 +7,7 @@ import { JwtUserDto } from 'src/auth/dto/jwt-user.dto';
 import { CurrencyType } from 'src/common/types/currency.enum';
 import { CreateInvoiceDto } from 'src/payment/dto/create-invoice.dto';
 import { PaymentService } from 'src/payment/payment.service';
+import { ParsedPaymentPayload } from 'src/payment/providers/payment-provider.base';
 import { PaymentStatus } from 'src/payment/types/PaymentStatus';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { UserService } from 'src/user/user.service';
@@ -39,10 +40,11 @@ export class UserPaymentService {
           amount: dto.amount,
           currency: dto.currency,
         },
-        async (status) => {
+        async (status, payload) => {
           await this.handleTopUpCallback(
             invoicePayload,
             status,
+            payload,
             user.userId
           );
         }
@@ -74,24 +76,33 @@ export class UserPaymentService {
   }
 
   async handleTopUpCallback(
-    payload: string,
+    invoicePayload: string,
     status: PaymentStatus,
+    payload: ParsedPaymentPayload,
     userId: number
   ) {
-    //TODO: calc amount
-    const payment =
-      await this.prisma.userPayment.update({
-        where: { payload },
-        data: { status },
-      });
-
     if (status === 'paid') {
+      const virtualAmount =
+        await this.paymentService.convertToVirtual(
+          payload.amount,
+          payload.currency as CurrencyType
+        );
+
+      const payment =
+        await this.prisma.userPayment.update({
+          where: { payload: invoicePayload },
+          data: { status },
+        });
+
       await this.userService.incrementBalance(
         payment.userId,
-        payment.amount
+        virtualAmount
       );
+
       this.logger.log(
-        `User ${userId} balance incremented by`
+        `User ${userId} balance incremented by ${virtualAmount} (from ${
+          payload.amount
+        } ${payment.currency})`
       );
     }
   }

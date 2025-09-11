@@ -4,12 +4,17 @@ import { CryptoBotProvider } from './providers/cryptobot.provider';
 import { PaymentProviderType } from './providers/payment-provider.enum';
 import { CreateInvoiceDto } from './dto/create-invoice.dto';
 import { PaymentCallback } from './providers/payment-provider.base';
+import { CurrencyRatesService } from 'src/currency-rates/currency-rates.service';
+import { CurrencyType } from 'src/common/types/currency.enum';
 
 @Injectable()
 export class PaymentService {
+  private readonly BASE_RATE = 10;
+
   constructor(
     private starsProvider: StarsProvider,
-    private cryptoProvider: CryptoBotProvider
+    private cryptoProvider: CryptoBotProvider,
+    private currencyRatesService: CurrencyRatesService
   ) {}
 
   async createInvoice(
@@ -48,5 +53,22 @@ export class PaymentService {
           rawBody
         );
     }
+  }
+
+  async convertToVirtual(
+    amount: number,
+    currency: CurrencyType
+  ) {
+    const usdRate =
+      await this.currencyRatesService.getUsdRate(
+        currency
+      );
+
+    const amountInUsd = amount * usdRate;
+
+    const virtualAmount =
+      amountInUsd * this.BASE_RATE;
+
+    return Math.floor(virtualAmount);
   }
 }
