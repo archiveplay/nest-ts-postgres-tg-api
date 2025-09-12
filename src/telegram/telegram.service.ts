@@ -14,8 +14,7 @@ export class TelegramService {
   private readonly api: any;
 
   constructor(
-    private readonly config: ConfigService,
-    private readonly userService: UserService
+    private readonly config: ConfigService
   ) {
     const token = this.config.get<string>(
       'BOT_TOKEN',
@@ -24,30 +23,6 @@ export class TelegramService {
     this.api = axios.create({
       baseURL: `https://api.telegram.org/bot${token}`,
     });
-  }
-
-  async handleUpdate(update: any) {
-    if (update.pre_checkout_query) {
-      await this.answerPreCheckoutQuery(
-        update.pre_checkout_query.id
-      );
-      return;
-    }
-
-    if (update.message?.successful_payment) {
-      const payment =
-        update.message.successful_payment;
-      const userId = update.message.from.id;
-      const amount = payment.total_amount;
-
-      await this.userService.incrementBalance(
-        userId,
-        amount
-      );
-      this.logger.log(
-        `User ${userId} paid ${amount}`
-      );
-    }
   }
 
   async answerPreCheckoutQuery(queryId: string) {

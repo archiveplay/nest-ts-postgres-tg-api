@@ -40,11 +40,10 @@ export class UserPaymentService {
           amount: dto.amount,
           currency: dto.currency,
         },
-        async (status, payload) => {
+        async (status) => {
           await this.handleTopUpCallback(
             invoicePayload,
             status,
-            payload,
             user.userId
           );
         }
@@ -80,16 +79,9 @@ export class UserPaymentService {
   async handleTopUpCallback(
     invoicePayload: string,
     status: PaymentStatus,
-    payload: ParsedPaymentPayload,
     userId: number
   ) {
     if (status === 'paid') {
-      const virtualAmount =
-        await this.paymentService.convertToVirtual(
-          payload.amount,
-          payload.currency as CurrencyType
-        );
-
       const payment =
         await this.prisma.userPayment.update({
           where: { payload: invoicePayload },
@@ -98,13 +90,12 @@ export class UserPaymentService {
 
       await this.userService.incrementBalance(
         payment.userId,
-        virtualAmount
+        payment.amount,
+        payment.currency
       );
 
       this.logger.log(
-        `User ${userId} balance incremented by ${virtualAmount} (from ${
-          payload.amount
-        } ${payment.currency})`
+        `User ${userId} balance incremented by ${payment.amount} ${payment.currency})`
       );
     }
   }

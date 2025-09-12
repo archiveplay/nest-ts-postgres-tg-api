@@ -51,7 +51,6 @@ export abstract class PaymentProviderBase {
 
   async handleWebhook(rawBody: any) {
     const result = this.parseWebhook(rawBody);
-    console.log('parseWebhook result', result);
     if (result) {
       const { status, payload } = result;
       await this.callCallback(status, payload);
