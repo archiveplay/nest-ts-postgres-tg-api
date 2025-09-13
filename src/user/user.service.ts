@@ -12,6 +12,16 @@ export class UserService {
     private readonly prisma: PrismaService
   ) {}
 
+  async setWallet(
+    userId: number,
+    address: string
+  ) {
+    return this.prisma.user.update({
+      where: { id: userId },
+      data: { tonWallet: address },
+    });
+  }
+
   async findOrCreate(dto: TelegramUserDto) {
     const user = await this.prisma.user.upsert({
       where: { id: dto.id },

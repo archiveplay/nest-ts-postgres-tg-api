@@ -19,7 +19,8 @@ model User {
   allows_write_to_pm Boolean?
 
   // Custom data
-  balance UserBalance[]
+  balance   UserBalance[]
+  tonWallet String?
 
   payments UserPayment[]
 }
