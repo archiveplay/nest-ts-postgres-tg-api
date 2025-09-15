@@ -4,7 +4,6 @@ import {
 } from '@nestjs/common';
 import axios from 'axios';
 import { ConfigService } from '@nestjs/config';
-import { UserService } from '../user/user.service';
 
 @Injectable()
 export class TelegramService {

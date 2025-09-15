@@ -6,6 +6,8 @@ import { UserModule } from './user/user.module';
 import { PaymentModule } from './payment/payment.module';
 import { TelegramModule } from './telegram/telegram.module';
 import { UserPaymentModule } from './user-payment/user-payment.module';
+import { TonWalletModule } from './ton-wallet/ton-wallet.module';
+import { PayoutModule } from './payout/payout.module';
 
 @Module({
   imports: [
@@ -16,6 +18,8 @@ import { UserPaymentModule } from './user-payment/user-payment.module';
     PaymentModule,
     TelegramModule,
     UserPaymentModule,
+    TonWalletModule,
+    PayoutModule,
   ],
 })
 export class AppModule {}

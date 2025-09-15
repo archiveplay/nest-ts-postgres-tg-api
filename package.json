@@ -34,8 +34,7 @@
     "@nestjs/platform-express": "^11.0.1",
     "@prisma/client": "^6.15.0",
     "@telegram-apps/init-data-node": "^2.0.10",
-    "@tonclient/core": "^1.30.0",
-    "@tonclient/lib-node": "^1.30.0",
+    "@ton-community/assets-sdk": "^0.0.5",
     "axios": "^1.11.0",
     "bn.js": "^5.2.2",
     "class-transformer": "^0.5.1",
@@ -46,6 +45,7 @@
     "passport-telegram-web-app": "^1.1.0",
     "reflect-metadata": "^0.2.2",
     "rxjs": "^7.8.1",
+    "ton": "^13.9.0",
     "tonweb": "^0.0.66"
   },
   "devDependencies": {

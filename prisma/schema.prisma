@@ -22,7 +22,8 @@ model User {
   balance   UserBalance[]
   tonWallet String?
 
-  payments UserPayment[]
+  payments   UserPayment[]
+  Withdrawal Withdrawal[]
 }
 
 model UserPayment {
@@ -49,6 +50,18 @@ model UserBalance {
   amount   Float        @default(0)
 
   @@unique([ownerId, currency])
+}
+
+model Withdrawal {
+  id        Int      @id @default(autoincrement())
+  userId    Int
+  amount    Int
+  asset     String
+  status    String
+  txHash    String?
+  createdAt DateTime @default(now())
+
+  user User @relation(fields: [userId], references: [id])
 }
 
 enum CurrencyType {
