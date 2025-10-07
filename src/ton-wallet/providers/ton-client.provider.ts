@@ -24,9 +24,6 @@ export class TonClientProvider {
       'APP_WALLET_SECRET'
     )!;
 
-    console.log('publicKeyHex', publicKeyHex);
-    console.log('secretKeyHex', secretKeyHex);
-
     this.secretKey = Buffer.from(
       secretKeyHex,
       'hex'
@@ -36,11 +33,6 @@ export class TonClientProvider {
       workchain: 0,
       publicKey: Buffer.from(publicKeyHex, 'hex'),
     });
-
-    console.log(
-      'appWallet',
-      this.appWallet.address
-    );
   }
 
   async getSeqno(): Promise<number> {
