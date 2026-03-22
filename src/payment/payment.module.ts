@@ -2,7 +2,7 @@ import { Module } from '@nestjs/common';
 import { PaymentService } from './payment.service';
 import { StarsProvider } from './providers/stars.provider';
 import { CryptoBotProvider } from './providers/cryptobot.provider';
-import { TelegramModule } from 'src/telegram/telegram.module';
+import { TelegramModule } from '@/telegram/telegram.module';
 import { PaymentController } from './payment.controller';
 
 @Module({

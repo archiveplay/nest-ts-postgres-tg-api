@@ -5,10 +5,10 @@ import {
   UseGuards,
 } from '@nestjs/common';
 import { PayoutService } from './payout.service';
-import { JwtAuthGuard } from 'src/auth/guard/jwt.guard';
-import { User } from 'src/common/decorators/user.decorator';
-import { JwtUserDto } from 'src/auth/dto/jwt-user.dto';
-import { CurrencyType } from 'src/common/types/currency.enum';
+import { JwtAuthGuard } from '@/auth/guard/jwt.guard';
+import { User } from '@/common/decorators/user.decorator';
+import { JwtUserDto } from '@/auth/dto/jwt-user.dto';
+import { CurrencyType } from '@/common/types/currency.enum';
 
 @Controller('payout')
 export class PayoutController {

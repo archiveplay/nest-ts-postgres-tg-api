@@ -6,7 +6,7 @@ import {
   PaymentCallback,
 } from './payment-provider.base';
 import { CreateInvoiceDto } from '../dto/create-invoice.dto';
-import { TelegramService } from 'src/telegram/telegram.service';
+import { TelegramService } from '@/telegram/telegram.service';
 import { PaymentStatus } from '../types/PaymentStatus';
 
 @Injectable()

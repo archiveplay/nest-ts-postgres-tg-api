@@ -9,11 +9,11 @@ import {
   UseGuards,
 } from '@nestjs/common';
 import { UserPaymentService } from './user-payment.service';
-import { CreateInvoiceDto } from 'src/payment/dto/create-invoice.dto';
-import { JwtAuthGuard } from 'src/auth/guard/jwt.guard';
-import { JwtUserDto } from 'src/auth/dto/jwt-user.dto';
-import { User } from 'src/common/decorators/user.decorator';
-import { CurrencyType } from 'src/common/types/currency.enum';
+import { CreateInvoiceDto } from '@/payment/dto/create-invoice.dto';
+import { JwtAuthGuard } from '@/auth/guard/jwt.guard';
+import { JwtUserDto } from '@/auth/dto/jwt-user.dto';
+import { User } from '@/common/decorators/user.decorator';
+import { CurrencyType } from '@/common/types/currency.enum';
 
 @Controller('user-payment')
 export class UserPaymentController {

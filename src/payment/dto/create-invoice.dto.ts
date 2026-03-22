@@ -5,7 +5,7 @@ import {
   IsEnum,
   IsOptional,
 } from 'class-validator';
-import { CurrencyType } from 'src/common/types/currency.enum';
+import { CurrencyType } from '@/common/types/currency.enum';
 
 export class CreateInvoiceDto {
   @IsEnum(PaymentProviderType)

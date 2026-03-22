@@ -3,14 +3,14 @@ import {
   Logger,
 } from '@nestjs/common';
 import { PaymentProviderType } from '@prisma/client';
-import { JwtUserDto } from 'src/auth/dto/jwt-user.dto';
-import { CurrencyType } from 'src/common/types/currency.enum';
-import { CreateInvoiceDto } from 'src/payment/dto/create-invoice.dto';
-import { PaymentService } from 'src/payment/payment.service';
-import { ParsedPaymentPayload } from 'src/payment/providers/payment-provider.base';
-import { PaymentStatus } from 'src/payment/types/PaymentStatus';
-import { PrismaService } from 'src/prisma/prisma.service';
-import { UserService } from 'src/user/user.service';
+import { JwtUserDto } from '@/auth/dto/jwt-user.dto';
+import { CurrencyType } from '@/common/types/currency.enum';
+import { CreateInvoiceDto } from '@/payment/dto/create-invoice.dto';
+import { PaymentService } from '@/payment/payment.service';
+import { ParsedPaymentPayload } from '@/payment/providers/payment-provider.base';
+import { PaymentStatus } from '@/payment/types/PaymentStatus';
+import { PrismaService } from '@/prisma/prisma.service';
+import { UserService } from '@/user/user.service';
 
 @Injectable()
 export class UserPaymentService {

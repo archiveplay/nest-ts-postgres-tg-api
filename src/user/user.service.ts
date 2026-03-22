@@ -3,7 +3,7 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
-import { TelegramUserDto } from 'src/auth/dto/telegram-user.dto';
+import { TelegramUserDto } from '@/auth/dto/telegram-user.dto';
 import { CurrencyType } from '@prisma/client';
 
 @Injectable()

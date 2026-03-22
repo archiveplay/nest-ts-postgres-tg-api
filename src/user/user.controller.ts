@@ -5,9 +5,9 @@ import {
   Post,
   UseGuards,
 } from '@nestjs/common';
-import { JwtUserDto } from 'src/auth/dto/jwt-user.dto';
-import { JwtAuthGuard } from 'src/auth/guard/jwt.guard';
-import { User } from 'src/common/decorators/user.decorator';
+import { JwtUserDto } from '@/auth/dto/jwt-user.dto';
+import { JwtAuthGuard } from '@/auth/guard/jwt.guard';
+import { User } from '@/common/decorators/user.decorator';
 import { UserService } from './user.service';
 
 @Controller('user')

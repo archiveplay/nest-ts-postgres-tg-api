@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
-import { CurrencyType } from 'src/common/types/currency.enum';
-import { TonWalletService } from 'src/ton-wallet/ton-wallet.service';
+import { CurrencyType } from '@/common/types/currency.enum';
+import { TonWalletService } from '@/ton-wallet/ton-wallet.service';
 
 @Injectable()
 export class PayoutService {

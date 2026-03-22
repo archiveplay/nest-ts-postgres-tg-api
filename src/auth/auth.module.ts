@@ -9,7 +9,7 @@ import {
 } from '@nestjs/config';
 import { JwtStrategy } from './strategy/jwt.strategy';
 import { TelegramStrategy } from './strategy/telegram.strategy';
-import { UserModule } from 'src/user/user.module';
+import { UserModule } from '@/user/user.module';
 
 @Module({
   imports: [

@@ -4,18 +4,16 @@ import {
 } from '@nestjs/testing';
 import { JwtService } from '@nestjs/jwt';
 import { AuthService } from './auth.service';
-import { PrismaService } from '../prisma/prisma.service';
+import { UserService } from '@/user/user.service';
 
-const mockPrismaService = {
-  user: {
-    upsert: jest.fn().mockImplementation(
-      ({ where, update, create }) =>
-        Promise.resolve({
-          id: where.id,
-          ...create,
-        }) // возвращаем fake user
-    ),
-  },
+const mockUserService = {
+  findOrCreate: jest.fn().mockImplementation(
+    (dto) =>
+      Promise.resolve({
+        id: dto.id,
+        ...dto,
+      })
+  ),
 };
 
 describe('AuthService', () => {
@@ -28,8 +26,8 @@ describe('AuthService', () => {
         providers: [
           AuthService,
           {
-            provide: PrismaService,
-            useValue: mockPrismaService,
+            provide: UserService,
+            useValue: mockUserService,
           },
           {
             provide: JwtService,
@@ -37,7 +35,7 @@ describe('AuthService', () => {
               sign: jest.fn(
                 () => 'fake-jwt-token'
               ),
-            }, // мок JWT
+            },
           },
         ],
       }).compile();
@@ -72,20 +70,7 @@ describe('AuthService', () => {
     });
 
     expect(
-      mockPrismaService.user.upsert
-    ).toHaveBeenCalledWith({
-      where: { id: 123 },
-      update: expect.objectContaining({
-        id: 123,
-        first_name: 'Test',
-        username: 'tester',
-        last_login: expect.any(Date),
-      }),
-      create: expect.objectContaining({
-        id: 123,
-        first_name: 'Test',
-        username: 'tester',
-      }),
-    });
+      mockUserService.findOrCreate
+    ).toHaveBeenCalledWith(fakeUser);
   });
 });

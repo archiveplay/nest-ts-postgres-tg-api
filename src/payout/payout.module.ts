@@ -1,7 +1,7 @@
 import { Module } from '@nestjs/common';
 import { PayoutService } from './payout.service';
 import { PayoutController } from './payout.controller';
-import { TonWalletModule } from 'src/ton-wallet/ton-wallet.module';
+import { TonWalletModule } from '@/ton-wallet/ton-wallet.module';
 
 @Module({
   imports: [TonWalletModule],
