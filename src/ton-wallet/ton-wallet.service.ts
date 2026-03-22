@@ -1,11 +1,11 @@
 import { Injectable } from '@nestjs/common';
-import { TonClientProvider } from './providers/ton-client.provider';
+// import { TonClientProvider } from './providers/ton-client.provider';
 import { CurrencyType } from '@prisma/client';
 
 @Injectable()
 export class TonWalletService {
   constructor(
-    private readonly tonClientProvider: TonClientProvider
+  //  private readonly tonClientProvider: TonClientProvider
   ) {}
 
   async send(
@@ -14,10 +14,10 @@ export class TonWalletService {
     amount: number
   ) {
     if (currency === CurrencyType.TON) {
-      return await this.tonClientProvider.send(
-        to,
-        amount
-      );
+      // return await this.tonClientProvider.send(
+      //   to,
+      //   amount
+      // );
     } else {
       console.log('currency', currency);
       return currency;

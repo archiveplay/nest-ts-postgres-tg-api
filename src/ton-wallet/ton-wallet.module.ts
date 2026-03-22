@@ -2,13 +2,13 @@ import { Global, Module } from '@nestjs/common';
 import { TonWalletService } from './ton-wallet.service';
 import { ConfigService } from '@nestjs/config';
 import { TonClient } from 'ton';
-import { TonClientProvider } from './providers/ton-client.provider';
+// import { TonClientProvider } from './providers/ton-client.provider';
 
 @Global()
 @Module({
   providers: [
     TonWalletService,
-    TonClientProvider,
+    // TonClientProvider,
     {
       provide: TonClient,
       inject: [ConfigService],
